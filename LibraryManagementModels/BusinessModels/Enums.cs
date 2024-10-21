@@ -12,4 +12,14 @@ namespace LibraryManagementModels.BusinessModels
         Update,
         Delete
     }
+
+    public enum EnumStatus
+    {
+        Created,
+        Updated,
+        Deleted,
+        Approved,
+        Rejected,
+        PendingForApproval
+    }
 }

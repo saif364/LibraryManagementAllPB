@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LibraryManagementModels.BusinessModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,12 +14,9 @@ namespace LibraryManagementService.InterfaceService
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
+ 
     }
 
-    public interface IBaseATService<T> where T : class
-    {
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetByIdAsync(int id);
-    }
+   
 
 }

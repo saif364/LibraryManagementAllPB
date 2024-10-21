@@ -10,8 +10,9 @@
 <hr />
 
 <div>
-    <a asp-action="PendingForApproval">Pending For Approval</a>
-    <a asp-action="Approve">Approve</a>
+    <a class="btn btn-sm btn-primary GlobalAjax" asp-action="StatusChange" asp-route-status="@EnumStatus.PendingForApproval.ToString()" asp-route-id="@Model.Id">Pending For Approval</a>
+    <a class="btn btn-sm btn-primary GlobalAjax" asp-action="StatusChange" asp-route-status="@EnumStatus.Approved.ToString()" asp-route-id="@Model.Id">Approve</a>
+    <a class="btn btn-sm btn-primary GlobalAjax" asp-action="StatusChange" asp-route-status="@EnumStatus.Rejected.ToString()" asp-route-id="@Model.Id">Reject</a>
 </div>
 
 <div class="row">

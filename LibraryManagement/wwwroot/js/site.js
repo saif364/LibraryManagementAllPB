@@ -48,6 +48,31 @@
         });
     });
 
+    $('.GlobalAjax').on('click', function (event) {
+        debugger;
+        event.preventDefault();
+
+        var $link = $(this); // this refers to the <a> tag
+        var url = $link.attr('href'); // Get the href attribute for the URL
+
+        $.ajax({
+            url: url,
+            type: 'GET', // Anchor links usually use GET requests
+            success: function (response) {
+                if (response.success) {
+                    var redirectUrl = response.redirectUrl + "?message=" + encodeURIComponent(response.message);
+                    window.location.href = redirectUrl;
+                } else {
+                    toastr.warning(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('An unexpected error occurred: ' + error);
+            }
+        });
+    });
+
+
     // Handle delete action
     // Handle delete action with toastr confirmation
     // Variable to hold the URL for deletion

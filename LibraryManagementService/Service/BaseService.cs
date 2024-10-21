@@ -1,4 +1,7 @@
-﻿using LibraryManagementRepository.InterfaceRepository;
+﻿using LibraryManagementModels.BusinessModels;
+using LibraryManagementModels.Entities;
+using LibraryManagementRepository.InterfaceRepository;
+using LibraryManagementRepository.Repository;
 using LibraryManagementService.InterfaceService;
 using System;
 using System.Collections.Generic;
@@ -12,8 +15,8 @@ namespace LibraryManagementService.Service
     {
         private readonly IRepository<T> _repository;
         private ILibraryRepository libraryRepository;
-
-        public BaseService(IRepository<T> repository)
+        
+        public BaseService(IRepository<T> repository )
         {
             _repository = repository;
         }
@@ -42,28 +45,8 @@ namespace LibraryManagementService.Service
         {
             await _repository.DeleteAsync(id);
         }
+         
     }
 
-    public class BaseATService<T> : IBaseATService<T> where T : class
-    {
-        private readonly IRepository<T> _repository;
-
-
-        public BaseATService(IRepository<T> repository)
-        {
-            _repository = repository;
-        }
-
-        public async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await _repository.GetAllAsync();
-        }
-
-        public async Task<T> GetByIdAsync(int id)
-        {
-            return await _repository.GetByIdAsync(id);
-        }
-
-    }
-
+  
 }

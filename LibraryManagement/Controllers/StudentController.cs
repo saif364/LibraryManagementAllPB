@@ -41,12 +41,27 @@ namespace LibraryManagement.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Student student)
+        public async Task<IActionResult> Create(StudentVM student)
         {
             try
             {
-                await _studentService.AddAsyncWithAT(student); //db related
+                await _studentService.AddAsyncWithAT(student); 
                 return JsonSuccess("Data Saved successfully", "Index");
+            }
+            catch (Exception ex)
+            {
+                return JsonInternalServerError(ex.InnerException.Message ?? ex.Message);
+            }
+
+        }
+
+        
+        public async Task<IActionResult> StatusChange(EnumStatus status,int id)
+        {
+            try
+            {
+                await _studentService.StatusChange(status, id);
+                return JsonSuccess("Status Changed successfully", "Index");
             }
             catch (Exception ex)
             {

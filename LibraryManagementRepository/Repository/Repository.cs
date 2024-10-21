@@ -25,11 +25,15 @@ namespace LibraryManagementRepository.Repository
             return await _dbSet.ToListAsync();
         }
 
+        //public async Task<T> GetByIdAsync(int id)
+        //{
+        //    return await _dbSet.FindAsync(id);
+        //}
+
         public async Task<T> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet.AsNoTracking().FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         }
-
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
