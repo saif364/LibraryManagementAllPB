@@ -1,4 +1,6 @@
-﻿using LibraryManagementModels.Entities;
+﻿using AutoMapper;
+using LibraryManagementModels.BusinessModels;
+using LibraryManagementModels.Entities;
 using LibraryManagementService.InterfaceService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +12,14 @@ namespace LibraryManagement.Controllers
         
         private readonly IStudentService _studentService;
         private readonly ILogger<StudentController> _logger;
+        private readonly IMapper _mapper;
 
-        public StudentController(ILogger<StudentController> logger , IStudentService studentService)
+        public StudentController(ILogger<StudentController> logger , IStudentService studentService, IMapper mapper)
         {
              
             _studentService = studentService;
             _logger = logger;
+            _mapper = mapper;
         }
         public async Task<IActionResult> Index()
         {
@@ -49,6 +53,7 @@ namespace LibraryManagement.Controllers
         public async Task<IActionResult> Update(int id)
         {
             var student = await _studentService.GetByIdAsync(id);
+            var vmStudent = _mapper.Map<StudentVM>(student);
             return View(student);
         }
 

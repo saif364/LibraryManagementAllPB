@@ -1,15 +1,12 @@
 
 using LibraryManagementRepository.DbConfigure;
-using LibraryManagementRepository.InterfaceRepository;
-using LibraryManagementRepository.Repository;
-using LibraryManagementService.InterfaceService;
-using LibraryManagementService.Service;
 using Microsoft.EntityFrameworkCore;
 using Serilog.Events;
 using Serilog;
 using LibraryManagementModels.Entities;
 using Microsoft.AspNetCore.Identity;
 using LibraryManagementModels.BusinessModels;
+using LibraryManagement.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,25 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<LibraryDbContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("LibraryDbContextCS")));
 
-//service
-builder.Services.AddScoped<IStudentService, StudentService>();
-builder.Services.AddScoped<ILibraryBService, LibraryBService>();
-builder.Services.AddScoped<ILibraryService, LibraryService>();
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<ICourseService, CourseService>();
-
-//
-builder.Services.AddScoped<IAuditTrialBaseRepository<StudentAuditTrial>, AuditTrialBaseRepository<StudentAuditTrial>>();
-
-//repo
-builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddScoped<ILibraryRepository, LibraryRepository>();
-builder.Services.AddScoped<ILibraryBRepository, LibraryBRepository>();
-builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-
-//add automapper
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+//Services 
+builder.Services.AddProjectServices();
 
 // Seq setup
 // Step 1: Configure Serilog to use Seq
