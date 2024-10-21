@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace LibraryManagementService.Service
 {
+   
     public class StudentService : BaseService<Student>, IStudentService
     {
         private readonly LibraryDbContext _context;
@@ -54,13 +55,14 @@ namespace LibraryManagementService.Service
 
         }
 
-        public async Task UpdateAsyncWithAT(Student student)
+        public async Task UpdateAsyncWithAT(StudentVM studentVM)
         {
 
             using var transaction = _context.Database.BeginTransaction();
 
             try
             {
+                var student = _mapper.Map<Student>(studentVM);
                 await _studentRepository.UpdateAsync(student);
 
                 var auditStudent = _mapper.Map<StudentAuditTrial>(student);
@@ -105,57 +107,21 @@ namespace LibraryManagementService.Service
                 await transaction.RollbackAsync();
                 throw;
             }
-
-
         }
 
-
-
-        public async Task<TAudit> CreateAuditTrailAsync<TAudit, TSource>(TSource obj, EnumAction action, string deletedBy)
-    where TAudit : class, new()
+         
+        public async Task<StudentVM> GetByIdATAsync(int id)
         {
-            // Map the object to its audit trail counterpart
-            var auditObject = _mapper.Map<TAudit>(obj);
-
-            // Set common audit properties (assuming they are present in the audit object)
-            var auditProperties = auditObject.GetType().GetProperties();
-             
-            if (action == EnumAction.Create)
-            {
-                var ActionBy = auditProperties.FirstOrDefault(p => p.Name == "ActionBy");
-                if (ActionBy != null)
-                {
-                    ActionBy.SetValue(auditObject, "Saif");
-                }
-            }
-
-            var updatedDateProp = auditProperties.FirstOrDefault(p => p.Name == "UpdatedDate");
-            if (updatedDateProp != null)
-            {
-                updatedDateProp.SetValue(auditObject, DateTime.Now);
-            }
-
-            var actionProp = auditProperties.FirstOrDefault(p => p.Name == "Action");
-            if (actionProp != null)
-            {
-                actionProp.SetValue(auditObject, action);
-            }
-
-            var deletedByProp = auditProperties.FirstOrDefault(p => p.Name == "DeletedBy");
-            if (deletedByProp != null)
-            {
-                deletedByProp.SetValue(auditObject, deletedBy);
-            }
-
-            // Save the audit object using the repository
-            await _auditTrialBaseRepository.AddAsync(auditObject);
-
-            // Return the audit object
-            return auditObject;
+            var student=await _studentRepository.GetByIdAsync(id);
+            var vmStudent = _mapper.Map<StudentVM>(student);
+            vmStudent.StudentAuditTrials = _auditTrialBaseRepository.GetAllAsync().Where(x=> x.Id==id).ToList();
+            return vmStudent;
         }
 
 
         // Additional methods specific to StudentService can go here, if needed
     }
 
+
+    
 }

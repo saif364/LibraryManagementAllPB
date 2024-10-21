@@ -10,11 +10,9 @@ using LibraryManagement.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<LibraryDbContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("LibraryDbContextCS")));
 
-//Services 
 builder.Services.AddProjectServices();
 
 // Seq setup

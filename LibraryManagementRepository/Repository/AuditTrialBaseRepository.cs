@@ -20,9 +20,9 @@ namespace LibraryManagementRepository.Repository
             _dbSet = _context.Set<T>();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public IQueryable<T> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            return _dbSet;
         }
 
         public async Task<T> GetByIdAsync(int id)
@@ -35,12 +35,7 @@ namespace LibraryManagementRepository.Repository
             await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
-
-        public Task AddAsync<TAudit>(TAudit auditObject) where TAudit : class, new()
-        {
-            throw new NotImplementedException();
-        }
-
+         
         //public async Task UpdateAsync(T entity)
         //{
         //    _dbSet.Update(entity);

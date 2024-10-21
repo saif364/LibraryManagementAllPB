@@ -17,7 +17,7 @@ namespace LibraryManagementService.Service
         {
             _repository = repository;
         }
- 
+
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
@@ -42,6 +42,28 @@ namespace LibraryManagementService.Service
         {
             await _repository.DeleteAsync(id);
         }
+    }
+
+    public class BaseATService<T> : IBaseATService<T> where T : class
+    {
+        private readonly IRepository<T> _repository;
+
+
+        public BaseATService(IRepository<T> repository)
+        {
+            _repository = repository;
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
+
+        public async Task<T> GetByIdAsync(int id)
+        {
+            return await _repository.GetByIdAsync(id);
+        }
+
     }
 
 }

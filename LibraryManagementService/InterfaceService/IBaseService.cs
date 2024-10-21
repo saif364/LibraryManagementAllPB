@@ -15,4 +15,10 @@ namespace LibraryManagementService.InterfaceService
         Task DeleteAsync(int id);
     }
 
+    public interface IBaseATService<T> where T : class
+    {
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T> GetByIdAsync(int id);
+    }
+
 }

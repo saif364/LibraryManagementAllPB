@@ -15,8 +15,11 @@ namespace LibraryManagementModels.BusinessModels
         public MappingProfile()
         {
             //for audit trial
-            CreateMap<StudentVM, StudentAuditTrial>();
-            CreateMap<StudentAuditTrial, StudentVM>();
+            CreateMap<Student, StudentAuditTrial>();
+            CreateMap<StudentAuditTrial, Student>();
+            //for VM
+            CreateMap<Student, StudentVM>();
+            CreateMap<StudentVM, Student>();
         }
     }
 }

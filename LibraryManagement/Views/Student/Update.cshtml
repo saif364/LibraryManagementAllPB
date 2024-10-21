@@ -1,4 +1,4 @@
-﻿@model LibraryManagementModels.Entities.Student
+﻿@model StudentVM
 
 @{
     ViewData["Title"] = "Update";
@@ -8,6 +8,12 @@
 
 <h4>Student</h4>
 <hr />
+
+<div>
+    <a asp-action="PendingForApproval">Pending For Approval</a>
+    <a asp-action="Approve">Approve</a>
+</div>
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Update">
@@ -47,24 +53,20 @@
     <thead>
         <tr>
             <th>Name</th>
-            <th>Address</th>
-            <th>Mobile</th>
-            <th>Actions</th>
+            <th>Action</th>
+            <th>ActionBy</th>
+           
         </tr>
     </thead>
 
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.StudentAuditTrials)
         {
             <tr>
                 <td>@item.Name</td>
-                <td>@item.Address</td>
-                <td>@item.Mobile</td>
-                <td>
-                    <a asp-action="Update" class="btn btn-primary btn-sm" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="LibraryDetails" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm delete-button">Delete</a>
-                </td>
+                <td>@item.Action</td>
+                <td>@item.ActionBy</td>
+               
             </tr>
         }
 
