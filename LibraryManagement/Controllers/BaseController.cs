@@ -6,7 +6,7 @@ namespace LibraryManagement.Controllers
     public class BaseController : Controller
     {
         public BaseController()
-        {
+        {  
             
         }
         public IActionResult JsonSuccess(string messages,string methodName)
