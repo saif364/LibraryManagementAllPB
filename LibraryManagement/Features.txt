@@ -1,0 +1,19 @@
+
+what we have ?
+
+-all inputs,file handler too -done
+-entity framework core -done
+-migration-code first -done
+-base controller handle all json reply with status code- done
+-tostr -done
+-centralise viewbag -done
+-dropdown load from chsthml,controller with own list,from db -done
+-audit trial
+-logging with seq - done
+-split one to three layer. navigation,business,repository - done
+- base repository for all basic crud  -done
+-identity login and logout and register 
+-automapper
+
+
+

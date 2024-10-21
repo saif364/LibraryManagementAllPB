@@ -1,0 +1,144 @@
+﻿@model Library
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Library</h4> 
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Update" method="post" enctype="multipart/form-data">
+            <input asp-for="FileName" type="hidden" class="form-control" />
+
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+               
+
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+
+            </div>
+            <div class="form-group">
+                <label asp-for="Thana" class="control-label"></label>
+                <input asp-for="Thana" class="form-control" />
+
+            </div>
+
+            <!-- Single Checkbox -->
+            <div>
+                <input type="checkbox" asp-for="IsSubscribed" />
+                <label>Subscribe to Newsletter</label>
+            </div>
+
+
+            <!-- Radio Buttons -->
+            <div>
+                <label>Gender:</label><br />
+                <input type="radio" asp-for="Gender" value="Male" /> Male <br />
+                <input type="radio" asp-for="Gender" value="Female" /> Female <br />
+                <input type="radio" asp-for="Gender" value="Female" /> Other <br />
+            </div>
+
+            <!-- Dropdown List -->
+            <div>
+                <label asp-for="SelectedCountry"></label>
+                @* <select asp-for="SelectedCountry" class="form-control">
+                <option value="">Select a country</option>
+                <option value="USA">USA</option>
+                <option value="Canada">Canada</option>
+                <option value="Bangladesh">Bangladesh</option>
+                </select> *@
+
+                <select asp-for="SelectedCountry" class="form-control" asp-items="ViewBag.ListOfCountries"></select>
+            </div>
+
+            <!-- File Upload -->
+            <div>
+                <label asp-for="UploadedFile"></label>
+                <input type="file" asp-for="UploadedFile" />
+                <br />
+                @if (!string.IsNullOrEmpty(Model.FileName))
+                {
+                    <p>
+                        Current File:
+                        <a asp-action="DownloadFile"  asp-route-id="@Model.Id">@Model.FileName</a>
+                    </p>
+                }
+
+            </div>
+
+            <!-- Date Input -->
+            <div>
+                <label asp-for="DateOfBirth"></label>
+                <input type="date" asp-for="DateOfBirth" class="form-control" />
+            </div>
+
+            <!-- Time Input -->
+            <div>
+                <label asp-for="PreferredTime"></label>
+                <input type="time" asp-for="PreferredTime" class="form-control" />
+            </div>
+
+            <!-- Number Input -->
+            <div>
+                <label asp-for="Age"></label>
+                <input type="number" asp-for="Age" class="form-control" min="0" />
+                @*  @Html.TextBoxFor(x => x.Age, new { @type = "number" }) *@
+            </div>
+
+            <!-- Range Input -->
+            <div>
+                <label asp-for="SatisfactionLevel"></label>
+                <input type="range" asp-for="SatisfactionLevel" min="1" max="100" />
+            </div>
+
+            <!-- Color Picker -->
+            <div>
+                <label asp-for="FavoriteColor"></label>
+                <input type="color" asp-for="FavoriteColor" />
+            </div>
+
+            @* multiple checkbox *@
+            <div>
+                <label>Students</label>
+                <br />
+                @foreach (var item in ViewBag.ListOfStudents)
+                {
+
+                    if (Model != null && Model.SelectedStudents.Contains(item))
+                    {
+                        <input name="SelectedStudents" type="checkbox" value="@item" checked='checked' />
+                    }
+                    else
+                    {
+                        <input name="SelectedStudents" type="checkbox" value="@item" />
+                    }
+                    @item
+                    <br />
+                }
+            </div>
+
+
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
