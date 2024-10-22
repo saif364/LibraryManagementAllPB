@@ -16,14 +16,16 @@ namespace LibraryManagementService.Service
         private readonly LibraryDbContext _context;
         private readonly IStudentRepository _studentRepository;
         private readonly IAuditTrialBaseRepository<StudentAuditTrial> _auditTrialBaseRepository;
+        private readonly IRepository<StudentSubCourse> _StudentSubCourse;
         private readonly IMapper _mapper;
-        public StudentService(IStudentRepository studentRepository, LibraryDbContext context, IAuditTrialBaseRepository<StudentAuditTrial> auditTrialBaseRepository, IMapper mapper)
+        public StudentService(IStudentRepository studentRepository, LibraryDbContext context, IAuditTrialBaseRepository<StudentAuditTrial> auditTrialBaseRepository, IMapper mapper, IRepository<StudentSubCourse> studentSubCourse)
             : base(studentRepository)
         {
             _context = context;
             _studentRepository = studentRepository;
             _auditTrialBaseRepository = auditTrialBaseRepository;
             _mapper = mapper;
+            _StudentSubCourse = studentSubCourse;
         }
 
         public async Task LogAuditAsync<T, TAudit>(T obj, EnumStatus action, string by)
@@ -59,20 +61,33 @@ namespace LibraryManagementService.Service
         }
         public async Task UpdateAsyncWithAT(StudentVM studentVM, EnumStatus status = EnumStatus.Updated)
         {
+
+            var student = _mapper.Map<Student>(studentVM);
+            if (status == default)
+            {
+                student.Status = EnumStatus.Updated.ToString();
+            }
+            else
+            {
+                student.Status = status.ToString();
+            }
+
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                var student = _mapper.Map<Student>(studentVM);
-                if (status == default(EnumStatus))
-                {
-                    student.Status = EnumStatus.Updated.ToString();
-                }
-                else
-                {
-                    student.Status = status.ToString();
-                }
                 await _studentRepository.UpdateAsync(student);
                 await LogAuditAsync<Student, StudentAuditTrial>(student, status, "Saif");
+
+                //child
+                if (studentVM.StudentSubCourses != null)
+                {
+                    foreach (var item in studentVM.StudentSubCourses)
+                    {
+                        var course = _mapper.Map<StudentSubCourse>(item);
+                        await _StudentSubCourse.AddAsync(item);
+                    }
+                }
+
                 await transaction.CommitAsync();
             }
             catch (Exception)

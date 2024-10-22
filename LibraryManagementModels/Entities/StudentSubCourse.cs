@@ -23,6 +23,7 @@ namespace LibraryManagementModels.Entities
         public string? CourseName { get; set; }
         public string TeacherName { get; set; }
         public int MaximumStudent { get; set; }
+        public int StudentId { get; set; }
 
     }
 }

@@ -20,6 +20,10 @@ namespace LibraryManagement.Helper
 
             // Audit trial registration
             services.AddScoped<IAuditTrialBaseRepository<StudentAuditTrial>, AuditTrialBaseRepository<StudentAuditTrial>>();
+            services.AddScoped<IAuditTrialBaseRepository<StudentSubCourseAuditTrial>, AuditTrialBaseRepository<StudentSubCourseAuditTrial>>();
+
+            //direct repository call for no business layer . Like child objects
+            services.AddScoped<IRepository<StudentSubCourse>, Repository<StudentSubCourse>>();
 
             // Repository registrations
             services.AddScoped<IStudentRepository, StudentRepository>();
