@@ -13,7 +13,16 @@ what we have ?
 -split one to three layer. navigation,business,repository - done
 - base repository for all basic crud  -done
 -identity login and logout and register 
--automapper
+-automapper -done 
+-caching
+-Asynchronous Programming
+-Role-Based Authorization
+-JWT Token Authentication
+-Email Notifications
+-CQRS and MediatR for Command-Query Segregation
+-Pagination for Large Data Sets
+-Real-time Features with SignalR
+-Two-Factor Authentication (2FA)
 
 
 
