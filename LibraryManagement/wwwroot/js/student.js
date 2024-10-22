@@ -19,10 +19,11 @@ $('#addCourse').click(function () {
             </tr>
         `);
 
-        $('#courseName').val('');
-        $('#teacherName').val('');
-        $('#maximumStudents').val('');
+        var firstRow = $("#coursesTable tbody tr:first");
 
+        firstRow.each(function myfunction() {
+            $(this).val("");
+        })
         courseIndex++;
     } else {
         alert("Please fill in all course details.");
