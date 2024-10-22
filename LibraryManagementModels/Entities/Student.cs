@@ -11,7 +11,7 @@ namespace LibraryManagementModels.Entities
         public string Mobile { get; set; }
         public string Status { get; set; }
 
-
+            
     }
 
     public class StudentAuditTrial : BaseAuditTrial
