@@ -91,11 +91,12 @@ namespace LibraryManagementService.Service
                 //child
                 if (studentVM.StudentSubCourses != null)
                 {
-                    //delete
+                    //delete by momid
+                    await _StudentSubCourse.DeleteByMomIdAsyncWithTransaction(studentVM.Id);
                     foreach (var item in studentVM.StudentSubCourses)
                     {
                         var course = _mapper.Map<StudentSubCourse>(item);
-                        course.StudentId = studentVM.Id;
+                        course.MomId = studentVM.Id;
                         await _StudentSubCourse.AddAsyncWithTransaction(course);
                         //Audit
                         await LogAuditAsync(course, EnumStatus.Created, "Khalid", _StudentSubCourseAuditTrial);
@@ -119,6 +120,8 @@ namespace LibraryManagementService.Service
                 await _studentRepository.DeleteAsync(id);
                 var obj = await _studentRepository.GetByIdAsync(id);
                 await LogAuditAsync<Student, StudentAuditTrial>(obj, EnumStatus.Deleted, "Saif", _StudentAuditTrial);
+
+                await SaveChangesAsyncWithTransaction();
                 await CommitTransactionAsync();
             }
             catch (Exception)
@@ -131,8 +134,8 @@ namespace LibraryManagementService.Service
         {
             var student = await _studentRepository.GetByIdAsync(id);
             var vmStudent = _mapper.Map<StudentVM>(student);
-            vmStudent.StudentAuditTrials =  _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).ToList();
-            var courses = _StudentSubCourse.GetAllAsyncQuery().Where(x => x.StudentId == id).ToList();
+            vmStudent.StudentAuditTrials = _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).ToList();
+            var courses = _StudentSubCourse.GetAllAsyncQuery().Where(x => x.MomId == id).ToList();
             vmStudent.StudentSubCourses = _mapper.Map<List<StudentSubCourseVM>>(courses);
             return vmStudent;
         }

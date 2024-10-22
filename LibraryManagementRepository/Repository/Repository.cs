@@ -69,6 +69,27 @@ namespace LibraryManagementRepository.Repository
             }
         }
 
+        public async Task DeleteByMomIdAsync(int momId)
+        {
+            var entities = await _dbSet.Where(x => EF.Property<int>(x, "MomId") == momId).ToListAsync();
+
+            if (entities != null)
+            {
+                _dbSet.RemoveRange(entities);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteByMomIdAsyncWithTransaction(int momId)
+        {
+            var entities = await _dbSet.Where(x => EF.Property<int>(x, "MomId") == momId).ToListAsync();
+
+            if (entities != null)
+            {
+                _dbSet.RemoveRange(entities);
+            }
+        }
+
         public async Task DeleteAsyncWithTransaction(int id)
         {
             var entity = await _dbSet.FindAsync(id);

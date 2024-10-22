@@ -12,8 +12,8 @@ namespace LibraryManagementModels.Entities
         public int MaximumStudent { get; set; }
 
 
-        public int StudentId {  get; set; }
-        [ForeignKey(nameof(StudentId))]
+        public int MomId {  get; set; }
+        [ForeignKey(nameof(MomId))]
         public Student Student { get; set; }
 
     }
@@ -23,7 +23,7 @@ namespace LibraryManagementModels.Entities
         public string? CourseName { get; set; }
         public string TeacherName { get; set; }
         public int MaximumStudent { get; set; }
-        public int StudentId { get; set; }
+        public int MomId { get; set; }
 
     }
 }

@@ -19,6 +19,9 @@ namespace LibraryManagementRepository.InterfaceRepository
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
 
+        Task DeleteByMomIdAsync(int momId);
+        Task DeleteByMomIdAsyncWithTransaction(int momId);
+
         IQueryable<T> GetAllAsyncQuery();
          
         Task AddAsyncWithTransaction(T entity);

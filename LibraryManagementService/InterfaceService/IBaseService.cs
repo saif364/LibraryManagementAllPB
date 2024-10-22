@@ -19,6 +19,7 @@ namespace LibraryManagementService.InterfaceService
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
+         
 
 
     }
