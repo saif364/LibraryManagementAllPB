@@ -13,11 +13,11 @@ namespace LibraryManagement.Controllers
 
         
         private readonly IStudentService _studentService;
-        private readonly IAuditTrialBaseRepository<StudentAuditTrial> _auditTrialBaseRepository;
+        private readonly IRepository<StudentAuditTrial> _auditTrialBaseRepository;
         private readonly ILogger<StudentController> _logger;
         private readonly IMapper _mapper;
 
-        public StudentController(ILogger<StudentController> logger , IStudentService studentService, IMapper mapper, IAuditTrialBaseRepository<StudentAuditTrial> auditTrialBaseRepository)
+        public StudentController(ILogger<StudentController> logger , IStudentService studentService, IMapper mapper, IRepository<StudentAuditTrial> auditTrialBaseRepository)
         {
              
             _studentService = studentService;

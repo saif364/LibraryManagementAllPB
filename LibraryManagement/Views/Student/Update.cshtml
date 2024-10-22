@@ -66,6 +66,28 @@
                     <button type="button" id="addCourse" class="btn btn-secondary btn-sm">Add Course</button>
                 </td>
             </tr>
+            @if (Model.StudentSubCourses != null)
+            {
+                var courseIndex = 0;
+                foreach (var item in Model.StudentSubCourses)
+                {
+                    <tr>
+                        <td>@item.CourseName</td>
+                        <td>@item.TeacherName</td>
+                        <td>@item.MaximumStudent</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeCourse(@courseIndex)">Remove</button>
+                        </td>
+                        <td hidden>
+                            <input type="hidden" name="StudentSubCourses[@courseIndex].CourseName" value="@item.CourseName" />
+                            <input type="hidden" name="StudentSubCourses[@courseIndex].TeacherName" value="@item.TeacherName" />
+                            <input type="hidden" name="StudentSubCourses[@courseIndex].MaximumStudent" value="@item.MaximumStudent" />
+                        </td>
+                       
+                    </tr>
+                    courseIndex++;
+                }
+            }
 
             <!-- Hidden fields for the dynamically added sub-courses -->
             <div id="hiddenCourses"></div>
@@ -80,7 +102,7 @@
     </div>
 </form>
 
- 
+
 
 <br />
 <br />
@@ -92,6 +114,7 @@
             <th>Name</th>
             <th>Action</th>
             <th>ActionBy</th>
+            <th>Action Date</th>
 
         </tr>
     </thead>
@@ -103,6 +126,7 @@
                 <td>@item.Name</td>
                 <td>@item.Action</td>
                 <td>@item.ActionBy</td>
+                <td>@item.CreatedDate</td>
 
             </tr>
         }

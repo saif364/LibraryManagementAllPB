@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
+using LibraryManagementModels.BusinessModels;
 using LibraryManagementModels.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
-namespace LibraryManagementModels.BusinessModels
+
+namespace LibraryManagement.Helper
 {
     public class MappingProfile : Profile
     {
@@ -27,9 +23,14 @@ namespace LibraryManagementModels.BusinessModels
             //For audit trial
             CreateMap<StudentSubCourse, StudentSubCourseAuditTrial>();
             CreateMap<StudentSubCourseAuditTrial, StudentSubCourse>();
+            //CreateMap<List<StudentSubCourse>, List<StudentSubCourseAuditTrial>>();
+            //CreateMap<List<StudentSubCourseAuditTrial>, List<StudentSubCourse>>();
             //For VM
             CreateMap<StudentSubCourse, StudentSubCourseVM>();
             CreateMap<StudentSubCourseVM, StudentSubCourse>();
+            //CreateMap<List<StudentSubCourse>, List<StudentSubCourseVM>>();
+            //CreateMap<List<StudentSubCourseVM>, List<StudentSubCourse>>();
+            
             //
         }
     }

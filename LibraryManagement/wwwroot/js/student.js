@@ -21,7 +21,7 @@ $('#addCourse').click(function () {
 
         var firstRow = $("#coursesTable tbody tr:first");
 
-        firstRow.each(function myfunction() {
+        firstRow.find("input").each(function () {
             $(this).val("");
         })
         courseIndex++;

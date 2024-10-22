@@ -13,49 +13,57 @@ namespace LibraryManagementService.Service
 {
     public class StudentService : BaseService<Student>, IStudentService
     {
-        private readonly LibraryDbContext _context;
         private readonly IStudentRepository _studentRepository;
-        private readonly IAuditTrialBaseRepository<StudentAuditTrial> _auditTrialBaseRepository;
+
+        //no logic so direct repository call
+        private readonly IRepository<StudentAuditTrial> _StudentAuditTrial;
         private readonly IRepository<StudentSubCourse> _StudentSubCourse;
+        private readonly IRepository<StudentSubCourseAuditTrial> _StudentSubCourseAuditTrial;
+        //
         private readonly IMapper _mapper;
-        public StudentService(IStudentRepository studentRepository, LibraryDbContext context, IAuditTrialBaseRepository<StudentAuditTrial> auditTrialBaseRepository, IMapper mapper, IRepository<StudentSubCourse> studentSubCourse)
+        public StudentService(IStudentRepository studentRepository, IRepository<StudentAuditTrial> studentAuditTrial, IMapper mapper, IRepository<StudentSubCourse> studentSubCourse, IRepository<StudentSubCourseAuditTrial> studentSubCourseAuditTrial)
             : base(studentRepository)
         {
-            _context = context;
+
             _studentRepository = studentRepository;
-            _auditTrialBaseRepository = auditTrialBaseRepository;
+            _StudentAuditTrial = studentAuditTrial;
             _mapper = mapper;
             _StudentSubCourse = studentSubCourse;
+            _StudentSubCourseAuditTrial = studentSubCourseAuditTrial;
         }
 
-        public async Task LogAuditAsync<T, TAudit>(T obj, EnumStatus action, string by)
-    where T : class
-    where TAudit : class, new()
+
+
+        public async Task LogAuditAsync<T, TAudit>(T obj, EnumStatus status, string by, IRepository<TAudit> auditRepository)
+      where T : class
+      where TAudit : class, new()
         {
-            var auditEntry = _mapper.Map<TAudit>(obj);
-            var auditEntity = auditEntry as dynamic;
-            auditEntity.UpdatedDate = DateTime.Now;
-            auditEntity.Action = action.ToString();
+            var audit = _mapper.Map<TAudit>(obj);
+
+            var auditEntity = audit as dynamic;
+            auditEntity.CreatedDate = DateTime.Now;
+            auditEntity.Action = status.ToString();
             auditEntity.ActionBy = by;
 
-            await _auditTrialBaseRepository.AddAsync(auditEntity);
+            await auditRepository.AddAsyncWithTransaction(auditEntity);
         }
-
         public async Task AddAsyncWithAT(StudentVM studentVM)
         {
-            using var transaction = _context.Database.BeginTransaction();
+            await BeginTransactionAsync();
             try
             {
                 var student = _mapper.Map<Student>(studentVM);
                 student.Status = EnumAction.Create.ToString();
-                await _studentRepository.AddAsync(student);
+                await _studentRepository.AddAsyncWithTransaction(student);
                 //audit
-                await LogAuditAsync<Student, StudentAuditTrial>(student, EnumStatus.Created, "Saif");
-                await transaction.CommitAsync();
+                await LogAuditAsync<Student, StudentAuditTrial>(student, EnumStatus.Created, "Saif", _StudentAuditTrial);
+
+                await SaveChangesAsyncWithTransaction();
+                await CommitTransactionAsync();
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync();
+                await RollbackTransactionAsync();
                 throw;
             }
         }
@@ -72,43 +80,50 @@ namespace LibraryManagementService.Service
                 student.Status = status.ToString();
             }
 
-            using var transaction = _context.Database.BeginTransaction();
+
             try
             {
-                await _studentRepository.UpdateAsync(student);
-                await LogAuditAsync<Student, StudentAuditTrial>(student, status, "Saif");
+                await BeginTransactionAsync();
+
+                await _studentRepository.UpdateAsyncWithTransaction(student);
+                await LogAuditAsync(student, status, "Saif", _StudentAuditTrial);
 
                 //child
                 if (studentVM.StudentSubCourses != null)
                 {
+                    //delete
                     foreach (var item in studentVM.StudentSubCourses)
                     {
                         var course = _mapper.Map<StudentSubCourse>(item);
-                        await _StudentSubCourse.AddAsync(item);
+                        course.StudentId = studentVM.Id;
+                        await _StudentSubCourse.AddAsyncWithTransaction(course);
+                        //Audit
+                        await LogAuditAsync(course, EnumStatus.Created, "Khalid", _StudentSubCourseAuditTrial);
                     }
                 }
+                await SaveChangesAsyncWithTransaction();
+                await CommitTransactionAsync();
 
-                await transaction.CommitAsync();
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync();
+                await RollbackTransactionAsync();
                 throw;
             }
         }
         public async Task DeleteAsyncWithAT(int id)
         {
-            using var transaction = _context.Database.BeginTransaction();
+            await BeginTransactionAsync();
             try
             {
                 await _studentRepository.DeleteAsync(id);
                 var obj = await _studentRepository.GetByIdAsync(id);
-                await LogAuditAsync<Student, StudentAuditTrial>(obj, EnumStatus.Deleted, "Saif");
-                await transaction.CommitAsync();
+                await LogAuditAsync<Student, StudentAuditTrial>(obj, EnumStatus.Deleted, "Saif", _StudentAuditTrial);
+                await CommitTransactionAsync();
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync();
+                await RollbackTransactionAsync();
                 throw;
             }
         }
@@ -116,7 +131,9 @@ namespace LibraryManagementService.Service
         {
             var student = await _studentRepository.GetByIdAsync(id);
             var vmStudent = _mapper.Map<StudentVM>(student);
-            vmStudent.StudentAuditTrials = _auditTrialBaseRepository.GetAllAsync().Where(x => x.Id == id).ToList();
+            vmStudent.StudentAuditTrials =  _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).ToList();
+            var courses = _StudentSubCourse.GetAllAsyncQuery().Where(x => x.StudentId == id).ToList();
+            vmStudent.StudentSubCourses = _mapper.Map<List<StudentSubCourseVM>>(courses);
             return vmStudent;
         }
         public async Task StatusChange(EnumStatus status, int id)

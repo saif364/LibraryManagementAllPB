@@ -25,6 +25,11 @@ namespace LibraryManagementRepository.Repository
             return await _dbSet.ToListAsync();
         }
 
+        public IQueryable<T> GetAllAsyncQuery()
+        {
+            return _dbSet;
+        }
+
         //public async Task<T> GetByIdAsync(int id)
         //{
         //    return await _dbSet.FindAsync(id);
@@ -40,12 +45,20 @@ namespace LibraryManagementRepository.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddAsyncWithTransaction(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+        }
+
         public async Task UpdateAsync(T entity)
         {
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
         }
-
+        public async Task UpdateAsyncWithTransaction(T entity)
+        {
+            _dbSet.Update(entity);
+        }
         public async Task DeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
@@ -54,6 +67,35 @@ namespace LibraryManagementRepository.Repository
                 _dbSet.Remove(entity);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task DeleteAsyncWithTransaction(int id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+            }
+        }
+
+        public async Task SaveChangesAsyncWithTransaction()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task BeginTransactionAsync()
+        {
+           await _context.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitTransactionAsync()
+        {
+            await _context.Database.CommitTransactionAsync();
+        }
+
+        public async Task RollbackTransactionAsync()
+        {
+            await _context.Database.RollbackTransactionAsync();
         }
     }
 

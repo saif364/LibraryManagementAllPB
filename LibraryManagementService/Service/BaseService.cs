@@ -1,8 +1,10 @@
-﻿using LibraryManagementModels.BusinessModels;
+﻿using AutoMapper;
+using LibraryManagementModels.BusinessModels;
 using LibraryManagementModels.Entities;
 using LibraryManagementRepository.InterfaceRepository;
 using LibraryManagementRepository.Repository;
 using LibraryManagementService.InterfaceService;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +16,11 @@ namespace LibraryManagementService.Service
     public class BaseService<T> : IBaseService<T> where T : class
     {
         private readonly IRepository<T> _repository;
-        private ILibraryRepository libraryRepository;
-        
-        public BaseService(IRepository<T> repository )
+
+        public BaseService(IRepository<T> repository)
         {
             _repository = repository;
+
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -45,8 +47,24 @@ namespace LibraryManagementService.Service
         {
             await _repository.DeleteAsync(id);
         }
-         
+
+        public async Task SaveChangesAsyncWithTransaction()
+        {
+            await _repository.SaveChangesAsyncWithTransaction();
+        }
+        public async Task BeginTransactionAsync()
+        {
+            await _repository.BeginTransactionAsync();
+        }
+        public async Task CommitTransactionAsync()
+        {
+            await _repository.CommitTransactionAsync();
+        }
+        public async Task RollbackTransactionAsync()
+        {
+            await _repository.RollbackTransactionAsync();
+        }
     }
 
-  
+
 }
