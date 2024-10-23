@@ -10,13 +10,16 @@ namespace LibraryManagement.Helper
     {
         public MappingProfile()
         {
+           
+
             //Mapping one class to another 
             //for audit trial
             CreateMap<Student, StudentAuditTrial>();
-            CreateMap<StudentAuditTrial, Student>();
+           
             //for VM
             CreateMap<Student, StudentVM>();
             CreateMap<StudentVM, Student>();
+            CreateMap<StudentAuditTrial , BaseAuditTrialVM>();
             //
 
             //Mapping one class to another 

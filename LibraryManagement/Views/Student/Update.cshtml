@@ -88,10 +88,6 @@
                     courseIndex++;
                 }
             }
-
-            <!-- Hidden fields for the dynamically added sub-courses -->
-            <div id="hiddenCourses"></div>
-
         </tbody>
     </table>
 
@@ -105,37 +101,11 @@
 
 
 <br />
-<br />
-<div> <h3>Audit Trials</h3> </div>
-<table class="table">
+<br /> 
 
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Action</th>
-            <th>ActionBy</th>
-            <th>Action Date</th>
-
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model.StudentAuditTrials)
-        {
-            <tr>
-                <td>@item.Name</td>
-                <td>@item.Action</td>
-                <td>@item.ActionBy</td>
-                <td>@item.CreatedDate</td>
-
-            </tr>
-        }
-
-    </tbody>
-
-</table>
-
-
+<div>
+    @Html.Partial("_DynamicAuditTrialGenerate", Model.StudentAuditTrials)
+</div>
 
 
 @section Scripts {

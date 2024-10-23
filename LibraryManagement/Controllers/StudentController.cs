@@ -29,7 +29,7 @@ namespace LibraryManagement.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            _logger.LogError("This is an error log message");
+           // _logger.LogError("This is an error log message");
             var list = await _studentService.GetAllAsync();
             return View(list.ToList());
         }
