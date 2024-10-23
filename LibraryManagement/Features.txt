@@ -14,6 +14,8 @@ what we have ?
 - base repository for all basic crud  -done
 -identity login and logout and register 
 -automapper -done 
+-middlwire logger for each start end method log write 
+
 -caching
 -Asynchronous Programming
 -Role-Based Authorization
