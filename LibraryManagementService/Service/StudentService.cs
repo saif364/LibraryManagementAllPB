@@ -56,7 +56,7 @@ namespace LibraryManagementService.Service
                 student.Status = EnumAction.Create.ToString();
                 await _studentRepository.AddAsyncWithTransaction(student);
                 //audit
-                await LogAuditAsync<Student, StudentAuditTrial>(student, EnumStatus.Created, "Saif", _StudentAuditTrial);
+                await LogAuditAsync(student, EnumStatus.Created, "Saif", _StudentAuditTrial);
 
                 await SaveChangesAsyncWithTransaction();
                 await CommitTransactionAsync();
