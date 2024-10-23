@@ -135,7 +135,7 @@ namespace LibraryManagementService.Service
             var student = await _studentRepository.GetByIdAsync(id);
             var vmStudent = _mapper.Map<StudentVM>(student);
 
-            var auditList = _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).Select(x => new StudentAuditTrial { Action = x.Action, ActionBy = x.ActionBy, CreatedDate = x.CreatedDate }).ToList();
+            var auditList = _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).Take(20).ToList();
 
             vmStudent.StudentAuditTrials = _mapper.Map<List<BaseAuditTrialVM>>(auditList);
             var courses = _StudentSubCourse.GetAllAsyncQuery().Where(x => x.MomId == id).ToList();

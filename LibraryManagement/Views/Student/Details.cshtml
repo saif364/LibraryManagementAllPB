@@ -1,4 +1,4 @@
-﻿@model LibraryManagementModels.Entities.Student
+﻿@model StudentVM
 
 @{
     ViewData["Title"] = "Details";
@@ -37,5 +37,9 @@
             @Html.DisplayFor(model => model.Status)
         </dd>
     </dl>
+</div>
+
+<div>
+    @Html.Partial("_DynamicAuditTrialGenerate", Model.StudentAuditTrials)
 </div>
 
