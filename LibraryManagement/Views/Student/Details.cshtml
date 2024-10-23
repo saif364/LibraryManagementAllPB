@@ -38,6 +38,36 @@
         </dd>
     </dl>
 </div>
+<br />
+<!-- Add Sub Courses -->
+<h4>Add Sub Courses</h4>
+<table class="table table-bordered" id="coursesTable">
+    <thead>
+        <tr>
+            <th>Course Name</th>
+            <th>Teacher Name</th>
+            <th>Maximum Students</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.StudentSubCourses != null)
+        {
+            var courseIndex = 0;
+            foreach (var item in Model.StudentSubCourses)
+            {
+                <tr>
+                    <td>@item.CourseName</td>
+                    <td>@item.TeacherName</td>
+                    <td>@item.MaximumStudent</td>
+                </tr>
+                courseIndex++;
+            }
+        }
+    </tbody>
+</table>
+
+<br />
 
 <div>
     @Html.Partial("_DynamicAuditTrialGenerate", Model.StudentAuditTrials)
