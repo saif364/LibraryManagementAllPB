@@ -90,5 +90,20 @@ namespace LibraryManagement.Controllers
             var student = await _studentService.GetByIdAsyncAT(id);
             return View(student);
         }
+
+        public async Task<IActionResult> DownloadFile(int id)
+        {
+            string fileName;
+            string contentType;
+            var fileStream = _studentService.GetFileStream(id, out fileName, out contentType);
+
+            if (fileStream == null || string.IsNullOrEmpty(fileName) || string.IsNullOrEmpty(contentType))
+            {
+                return NotFound();
+            }
+
+            return File(fileStream, contentType, fileName);
+        }
+         
     }
 }

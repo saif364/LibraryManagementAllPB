@@ -105,6 +105,20 @@
                     <button type="button" id="addFile" class="btn btn-secondary btn-sm">Add File</button>
                 </td>
             </tr>
+
+
+            @foreach (var item in Model.AttachmentsFromDB)
+            {
+                <tr>
+                    @if (!string.IsNullOrEmpty(item.FileNameInServer))
+                    {
+                        <td>
+                           
+                            <a asp-action="DownloadFile" asp-route-id="@item.Id">@item.OriginalFileName</a>
+                        </td>
+                    }
+                </tr>
+            }
         </tbody>
     </table>
     <br />

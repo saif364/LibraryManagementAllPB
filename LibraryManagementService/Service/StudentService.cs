@@ -165,8 +165,11 @@ namespace LibraryManagementService.Service
             var vmStudent = _mapper.Map<StudentVM>(student);
 
             var auditList = _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).OrderBy(x => x.Id).Take(20).ToList();
-
             vmStudent.StudentAuditTrials = _mapper.Map<List<BaseAuditTrialVM>>(auditList);
+
+            var attachments = _SubAttachmentRepo.GetAllAsyncQuery().Where(x => x.MomID == id.ToString()).OrderBy(x => x.Id).ToList();
+            vmStudent.AttachmentsFromDB = _mapper.Map<List<StudentSubAttachmentVM>>(attachments);
+
             var courses = _StudentSubCourse.GetAllAsyncQuery().Where(x => x.MomId == id).ToList();
             vmStudent.StudentSubCourses = _mapper.Map<List<StudentSubCourseVM>>(courses);
             return vmStudent;
@@ -178,5 +181,31 @@ namespace LibraryManagementService.Service
             await UpdateAsyncWithAT(studnet, status);
         }
 
+
+        public Stream GetFileStream(int id, out string fileName, out string contentType)
+        {
+            var attachment =  _SubAttachmentRepo.GetByIdAsync(id).Result;  
+            fileName = attachment?.FileNameInServer;  
+
+            if (attachment == null || string.IsNullOrEmpty(fileName))
+            {
+                contentType = null;  
+                return null;  
+            }
+
+            var downloadPath = Path.Combine(uploadPath, fileName);
+            if (!System.IO.File.Exists(downloadPath))
+            {
+                contentType = null;  
+                return null;  
+            }
+            contentType = FileHelper.GetContentType(fileName);
+            return FileHelper.FileStream(downloadPath);
+        }
+
+        public string GetContentType(string fileName)
+        {
+            return FileHelper.GetContentType(fileName);
+        }
     }
 }

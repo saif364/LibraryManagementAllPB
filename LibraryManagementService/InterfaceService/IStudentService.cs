@@ -14,6 +14,7 @@ namespace LibraryManagementService.InterfaceService
         Task UpdateAsyncWithAT(StudentVM student, EnumStatus status = EnumStatus.Updated);
 
         Task<StudentVM> GetByIdAsyncAT(int id);
+        Stream GetFileStream(int id, out string fileName, out string contentType);
 
         Task StatusChange(EnumStatus status, int id);
     }
