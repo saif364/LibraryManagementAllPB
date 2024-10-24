@@ -171,10 +171,15 @@ $('#btnStudentAdd').click(function (e) {
         contentType: false,  // Important for sending FormData
         data: formData,
         success: function (response) {
-            alert('Student updated successfully!');
+            if (response.success) {
+                var redirectUrl = response.redirectUrl + "?message=" + encodeURIComponent(response.message);
+                window.location.href = redirectUrl;
+            } else {
+                toastr.warning(response.message);
+            }
         },
         error: function (xhr, status, error) {
-            alert('Error: ' + error);
+            toastr.warning('Error: ' + xhr.responseText);
         }
     });
 });

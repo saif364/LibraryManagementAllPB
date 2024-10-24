@@ -10,7 +10,7 @@ public static class FileHelper
             Directory.CreateDirectory(uploadPath);
         var uniqueFileName = GenerateUniqueFileName(file.FileName);
         var fileName = Path.GetFileName(uniqueFileName);
-        var filePath = Path.Combine(uploadPath, fileName);
+        var filePath = Path.Combine(uploadPath, uniqueFileName);
 
         using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
         {

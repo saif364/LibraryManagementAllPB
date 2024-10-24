@@ -4,6 +4,7 @@ using LibraryManagementModels.Entities;
 using LibraryManagementRepository.DbConfigure;
 using LibraryManagementRepository.InterfaceRepository;
 using LibraryManagementService.InterfaceService;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +14,19 @@ namespace LibraryManagementService.Service
 {
     public class StudentService : BaseService<Student>, IStudentService
     {
+        private string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Files");
+
         private readonly IStudentRepository _studentRepository;
 
         //no logic so direct repository call
         private readonly IRepository<StudentAuditTrial> _StudentAuditTrial;
         private readonly IRepository<StudentSubCourse> _StudentSubCourse;
+        private readonly IRepository<StudentSubAttachment> _SubAttachmentRepo;
         private readonly IRepository<StudentSubCourseAuditTrial> _StudentSubCourseAuditTrial;
+        private readonly IRepository<StudentSubAttachmentAuditTrial> _SubAttachmentATRepo;
         //
         private readonly IMapper _mapper;
-        public StudentService(IStudentRepository studentRepository, IRepository<StudentAuditTrial> studentAuditTrial, IMapper mapper, IRepository<StudentSubCourse> studentSubCourse, IRepository<StudentSubCourseAuditTrial> studentSubCourseAuditTrial)
+        public StudentService(IStudentRepository studentRepository, IRepository<StudentAuditTrial> studentAuditTrial, IMapper mapper, IRepository<StudentSubCourse> studentSubCourse, IRepository<StudentSubCourseAuditTrial> studentSubCourseAuditTrial, IRepository<StudentSubAttachment> subAttachmentRepo, IRepository<StudentSubAttachmentAuditTrial> subAttachmentATRepo)
             : base(studentRepository)
         {
 
@@ -30,11 +35,13 @@ namespace LibraryManagementService.Service
             _mapper = mapper;
             _StudentSubCourse = studentSubCourse;
             _StudentSubCourseAuditTrial = studentSubCourseAuditTrial;
+            _SubAttachmentRepo = subAttachmentRepo;
+            _SubAttachmentATRepo = subAttachmentATRepo;
         }
 
 
 
-        public async Task LogAuditAsync<T, TAudit>(T obj, EnumStatus status, string by, IRepository<TAudit> auditRepository)
+        public async Task AuditTrial<T, TAudit>(T obj, EnumStatus status, string by, IRepository<TAudit> auditRepository)
       where T : class
       where TAudit : class, new()
         {
@@ -56,7 +63,7 @@ namespace LibraryManagementService.Service
                 student.Status = EnumAction.Create.ToString();
                 await _studentRepository.AddAsyncWithTransaction(student);
                 //audit
-                await LogAuditAsync(student, EnumStatus.Created, "Saif", _StudentAuditTrial);
+                await AuditTrial(student, EnumStatus.Created, "Saif", _StudentAuditTrial);
 
                 await SaveChangesAsyncWithTransaction();
                 await CommitTransactionAsync();
@@ -80,15 +87,15 @@ namespace LibraryManagementService.Service
                 student.Status = status.ToString();
             }
 
-
             try
             {
                 await BeginTransactionAsync();
 
+                //parent table and audit
                 await _studentRepository.UpdateAsyncWithTransaction(student);//1
-                await LogAuditAsync(student, status, "Saif", _StudentAuditTrial);//2
+                await AuditTrial(student, status, "Saif", _StudentAuditTrial);//2
 
-                //child
+                //child table and audit
                 if (studentVM.StudentSubCourses != null)
                 {
                     //delete by momid
@@ -99,9 +106,31 @@ namespace LibraryManagementService.Service
                         course.MomId = studentVM.Id;
                         await _StudentSubCourse.AddAsyncWithTransaction(course);//4
                         //Audit
-                        await LogAuditAsync(course, EnumStatus.Created, "Khalid", _StudentSubCourseAuditTrial);//6
+                        await AuditTrial(course, EnumStatus.Created, "Khalid", _StudentSubCourseAuditTrial);//6
                     }
                 }
+
+                //child file save and audit
+                if (studentVM.StudentSubAttachmentsFiles != null)
+                {
+                    foreach (IFormFile file in studentVM.StudentSubAttachmentsFiles)
+                    {
+                        var obj = new StudentSubAttachment();
+                        obj.OriginalFileName = file.FileName;
+                        obj.UploadBy = "Khalid";
+                        obj.UploadDate = DateTime.Now;
+                        obj.MomID = studentVM.Id.ToString();
+
+                        var fileName = FileHelper.SaveFile(file, uploadPath);
+                        if (!string.IsNullOrEmpty(fileName))
+                        {
+                            obj.FileNameInServer = fileName;
+                            await _SubAttachmentRepo.AddAsyncWithTransaction(obj);//7
+                            await AuditTrial(obj, EnumStatus.Created, "Khalid", _SubAttachmentATRepo);//8
+                        }
+                    }
+                }
+
                 await SaveChangesAsyncWithTransaction();
                 await CommitTransactionAsync();
 
@@ -119,7 +148,7 @@ namespace LibraryManagementService.Service
             {
                 await _studentRepository.DeleteAsync(id);
                 var obj = await _studentRepository.GetByIdAsync(id);
-                await LogAuditAsync<Student, StudentAuditTrial>(obj, EnumStatus.Deleted, "Saif", _StudentAuditTrial);
+                await AuditTrial<Student, StudentAuditTrial>(obj, EnumStatus.Deleted, "Saif", _StudentAuditTrial);
 
                 await SaveChangesAsyncWithTransaction();
                 await CommitTransactionAsync();
@@ -135,7 +164,7 @@ namespace LibraryManagementService.Service
             var student = await _studentRepository.GetByIdAsync(id);
             var vmStudent = _mapper.Map<StudentVM>(student);
 
-            var auditList = _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).OrderBy(x=> x.Id).Take(20).ToList();
+            var auditList = _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).OrderBy(x => x.Id).Take(20).ToList();
 
             vmStudent.StudentAuditTrials = _mapper.Map<List<BaseAuditTrialVM>>(auditList);
             var courses = _StudentSubCourse.GetAllAsyncQuery().Where(x => x.MomId == id).ToList();

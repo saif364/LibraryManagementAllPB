@@ -26,13 +26,14 @@ namespace LibraryManagement.Helper
             //For audit trial
             CreateMap<StudentSubCourse, StudentSubCourseAuditTrial>();
             CreateMap<StudentSubCourseAuditTrial, StudentSubCourse>();
-            //CreateMap<List<StudentSubCourse>, List<StudentSubCourseAuditTrial>>();
-            //CreateMap<List<StudentSubCourseAuditTrial>, List<StudentSubCourse>>();
+
+            CreateMap<StudentSubAttachment, StudentSubAttachmentAuditTrial>();
+             
+
             //For VM
             CreateMap<StudentSubCourse, StudentSubCourseVM>();
             CreateMap<StudentSubCourseVM, StudentSubCourse>();
-            //CreateMap<List<StudentSubCourse>, List<StudentSubCourseVM>>();
-            //CreateMap<List<StudentSubCourseVM>, List<StudentSubCourse>>();
+             
             
             //
         }

@@ -28,11 +28,13 @@ namespace LibraryManagement.Helper
             // Audit trial registration
             services.AddScoped<IRepository<StudentAuditTrial>, Repository<StudentAuditTrial>>();
             services.AddScoped<IRepository<StudentSubCourseAuditTrial>, Repository<StudentSubCourseAuditTrial>>();
+            services.AddScoped<IRepository<StudentSubAttachmentAuditTrial>, Repository<StudentSubAttachmentAuditTrial>>();
 
             //direct repository call for no business layer . Like child objects
             services.AddScoped<IRepository<StudentSubCourse>, Repository<StudentSubCourse>>();
+            services.AddScoped<IRepository<StudentSubAttachment>, Repository<StudentSubAttachment>>();
 
-           
+
 
             // AutoMapper registration
             services.AddAutoMapper(typeof(MappingProfile)); // Registers all profiles including MappingProfile

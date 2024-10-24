@@ -44,6 +44,13 @@ what we have ?
 
 
 
+ case 
+	1- basic crud- from controller or web layer
+	2- with audit trial and child table - handle from service class
+	3- more queries handle from repository layers
+
+
+
 
 
 
