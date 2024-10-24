@@ -33,10 +33,14 @@ what we have ?
 
 
  -dynamic return from controller 
+ -minimalistic controller /can be used for api too
  -dynamic audit trial
  -dynamic repository 
  -dynamic service
- -dynamic data transfer from one model to another model
+ -dynamic data transfer from one model to another model- automapper
+ -SEQ for error handling
+
+ -its like using jquery but have chance to write js. flexibility 
 
 
 

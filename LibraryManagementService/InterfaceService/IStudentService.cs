@@ -13,7 +13,7 @@ namespace LibraryManagementService.InterfaceService
         Task AddAsyncWithAT(StudentVM student);
         Task UpdateAsyncWithAT(StudentVM student, EnumStatus status = EnumStatus.Updated);
 
-        Task<StudentVM> GetByIdATAsync(int id);
+        Task<StudentVM> GetByIdAsyncAT(int id);
 
         Task StatusChange(EnumStatus status, int id);
     }

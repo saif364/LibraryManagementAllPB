@@ -18,7 +18,7 @@ namespace LibraryManagement.Controllers
         private readonly IStudentService _studentService;
         private readonly ILogger<LibraryController> _logger;
 
-        public LibraryController(ILogger<LibraryController> logger,ILibraryService LibraryService, IStudentService studentService)
+        public LibraryController(ILogger<LibraryController> logger, ILibraryService LibraryService, IStudentService studentService)
         {
             _LibraryService = LibraryService;
             _studentService = studentService;
@@ -52,7 +52,7 @@ namespace LibraryManagement.Controllers
                 //file handle
 
                 var result = FileHelper.SaveFile(library.UploadedFile, uploadPath);
-                if (result == true)
+                if (string.IsNullOrEmpty(result))
                 {
                     var uniqueFileName = Guid.NewGuid().ToString() + "_" + DateTime.Now.ToString("ddMMYYYYHHmmss") + "_" + library.UploadedFile.FileName;
                     library.FileName = library.UploadedFile.FileName;
@@ -72,9 +72,9 @@ namespace LibraryManagement.Controllers
 
         }
 
-        public async Task< IActionResult> Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
-            var library =await _LibraryService.GetByIdAsync(id);
+            var library = await _LibraryService.GetByIdAsync(id);
             //library.SelectedStudents = library.Students.Split(new string[] { "||" }, StringSplitOptions.None).ToList();
             ReturnViewBags();
             return View(library);
@@ -94,7 +94,7 @@ namespace LibraryManagement.Controllers
                 if (library.UploadedFile != null)
                 {
                     var result = FileHelper.SaveFile(library.UploadedFile, uploadPath);
-                    if (result)
+                    if (string.IsNullOrEmpty(result))
                     {
                         library.FileName = library.UploadedFile.FileName;
                     }
@@ -128,8 +128,8 @@ namespace LibraryManagement.Controllers
         {
             try
             {
-               await _LibraryService.DeleteAsync(id);
-               return JsonSuccess("Data Deleted successfully", "Index");
+                await _LibraryService.DeleteAsync(id);
+                return JsonSuccess("Data Deleted successfully", "Index");
             }
             catch (Exception ex)
             {
@@ -137,9 +137,9 @@ namespace LibraryManagement.Controllers
             }
 
         }
-        public async Task< IActionResult> LibraryDetails(int id)
+        public async Task<IActionResult> LibraryDetails(int id)
         {
-            
+
             var library = await _LibraryService.GetByIdAsync(id);
             return View(library);
         }
@@ -147,7 +147,7 @@ namespace LibraryManagement.Controllers
 
         public async Task<IActionResult> DownloadFile(int id)
         {
-            var library =await _LibraryService.GetByIdAsync(id);
+            var library = await _LibraryService.GetByIdAsync(id);
             var fileName = library.FileName;
 
             if (library == null || string.IsNullOrEmpty(fileName))
@@ -178,8 +178,8 @@ namespace LibraryManagement.Controllers
 
         public void ReturnViewBags()
         {
-            
-            ViewBag.ListOfStudents = _studentService.GetAllAsync().Result.Select(x=> x.Name).ToList();
+
+            ViewBag.ListOfStudents = _studentService.GetAllAsync().Result.Select(x => x.Name).ToList();
             //ViewBag.ListOfCountries = new List<SelectListItem>
             //{
             //    new SelectListItem{Text="Bangladesh",Value="Bangladesh"},

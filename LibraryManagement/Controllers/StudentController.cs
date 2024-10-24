@@ -57,7 +57,7 @@ namespace LibraryManagement.Controllers
         }
         public async Task<IActionResult> Update(int id)
         {
-            var vmStudent = await _studentService.GetByIdATAsync(id);
+            var vmStudent = await _studentService.GetByIdAsyncAT(id);
             return View(vmStudent);
         }
         [HttpPost]
@@ -87,7 +87,7 @@ namespace LibraryManagement.Controllers
         }
         public async Task<IActionResult> Details(int id)
         {
-            var student = await _studentService.GetByIdATAsync(id);
+            var student = await _studentService.GetByIdAsyncAT(id);
             return View(student);
         }
     }

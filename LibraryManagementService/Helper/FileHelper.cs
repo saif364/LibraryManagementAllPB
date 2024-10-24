@@ -1,9 +1,11 @@
-﻿public static class FileHelper
+﻿using Microsoft.AspNetCore.Http;
+
+public static class FileHelper
 {
-    public static bool SaveFile(IFormFile file, string uploadPath)
+    public static string SaveFile(IFormFile file, string uploadPath)
     {
         if (file == null || file.Length == 0)
-            return false;
+            return "";
         if (!Directory.Exists(uploadPath))
             Directory.CreateDirectory(uploadPath);
         var uniqueFileName = GenerateUniqueFileName(file.FileName);
@@ -14,7 +16,7 @@
         {
             file.CopyTo(stream);
         }
-        return true;
+        return uniqueFileName;
     }
 
     public static bool  DeleteFile(string filePath)

@@ -3,21 +3,15 @@
 @{
     ViewData["Title"] = "Update";
 }
-
 <h3>Update Student</h3>
-
 <hr />
-
 <div>
     <a class="btn btn-sm btn-primary GlobalAjax" asp-action="StatusChange" asp-route-status="@EnumStatus.PendingForApproval.ToString()" asp-route-id="@Model.Id">Pending For Approval</a>
     <a class="btn btn-sm btn-primary GlobalAjax" asp-action="StatusChange" asp-route-status="@EnumStatus.Approved.ToString()" asp-route-id="@Model.Id">Approve</a>
     <a class="btn btn-sm btn-primary GlobalAjax" asp-action="StatusChange" asp-route-status="@EnumStatus.Rejected.ToString()" asp-route-id="@Model.Id">Reject</a>
 </div>
-
-
-<form asp-action="Update" method="post">
+<form>
     <div class="row">
-
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Id" />
         <div class="form-group col-md-4">
@@ -35,11 +29,9 @@
             <input asp-for="Mobile" class="form-control" />
             <span asp-validation-for="Mobile" class="text-danger"></span>
         </div>
-
     </div>
     <br />
     <br />
-
     <!-- Add Sub Courses -->
     <h4>Add Sub Courses</h4>
     <table class="table table-bordered" id="coursesTable">
@@ -72,42 +64,60 @@
                 foreach (var item in Model.StudentSubCourses)
                 {
                     <tr>
-                        <td>@item.CourseName</td>
-                        <td>@item.TeacherName</td>
-                        <td>@item.MaximumStudent</td>
+                        <td>
+                            @item.CourseName
+                            <input type="hidden" name="StudentSubCourses[@courseIndex].CourseName" value="@item.CourseName" />
+                        </td>
+                        <td>
+                            @item.TeacherName
+                            <input type="hidden" name="StudentSubCourses[@courseIndex].TeacherName" value="@item.TeacherName" />
+                        </td>
+                        <td>
+                            @item.MaximumStudent
+                            <input type="hidden" name="StudentSubCourses[@courseIndex].MaximumStudent" value="@item.MaximumStudent" />
+                        </td>
                         <td>
                             <button type="button" class="btn btn-sm btn-danger" onclick="removeCourse(@courseIndex)">Remove</button>
                         </td>
-                        <td hidden>
-                            <input type="hidden" name="StudentSubCourses[@courseIndex].CourseName" value="@item.CourseName" />
-                            <input type="hidden" name="StudentSubCourses[@courseIndex].TeacherName" value="@item.TeacherName" />
-                            <input type="hidden" name="StudentSubCourses[@courseIndex].MaximumStudent" value="@item.MaximumStudent" />
-                        </td>
-                       
+
                     </tr>
                     courseIndex++;
                 }
             }
         </tbody>
     </table>
-
-
+    <br />
+    <!-- Add Sub Attachment -->
+    <h4>Attachments</h4>
+    <table class="table table-bordered" id="idfilesTable">
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <input type="file" id="idFile" class="form-control" name="StudentSubAttachmentsFiles" />
+                </td>
+                <td>
+                    <button type="button" id="addFile" class="btn btn-secondary btn-sm">Add File</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br />
     <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
+        <input type="button" id="btnStudentAdd" value="Save" class="btn btn-primary btn-sm" />
         <a asp-action="Index" class="btn btn-sm btn-primary">Back to List</a>
     </div>
 </form>
-
-
-
 <br />
-<br /> 
-
+<br />
 <div>
     @Html.Partial("_DynamicAuditTrialGenerate", Model.StudentAuditTrials)
 </div>
-
-
 @section Scripts {
     <script src="~/js/student.js"></script>
 }

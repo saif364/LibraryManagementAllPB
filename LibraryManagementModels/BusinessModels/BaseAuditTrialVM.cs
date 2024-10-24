@@ -16,6 +16,9 @@ namespace LibraryManagementModels.BusinessModels
         [DisplayName("Date")]
         public DateTime CreatedDate { get; set; }
         public string? Action { get; set; }
-         
+
+        //public int AuditTrialId { get; set; }
+
+
     }
 }

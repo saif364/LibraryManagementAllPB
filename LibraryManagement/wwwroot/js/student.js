@@ -1,4 +1,6 @@
-﻿var courseIndex = $('#coursesTable tbody tr').length - 1;//for first row skip to model binding
+﻿
+//#region Sub Course Section 
+var courseIndex = $('#coursesTable tbody tr').length - 1;//for first row skip to model binding
 $('#addCourse').click(function () {
     var courseName = $('#courseName').val();
     var teacherName = $('#teacherName').val();
@@ -58,5 +60,130 @@ function reIndexCourses() {
         courseIndex++;
     });
 }
+
+//#endregion
+
+
+//#region Sub Attachemnt Section 
+var courseIndex = 0;
+
+$('#addFile').click(function () {
+    var fileInput = $('#idFile')[0];
+    var file = fileInput.files[0]; // Get the selected file
+
+    if (file) {
+        // Clone the original file input (without the value) and append it for form purposes
+        var newFileInput = $(fileInput).clone().attr('id', 'fileInput_' + courseIndex).hide();
+
+        // Append the file details to the table and include the new (cloned) file input
+        $('#idfilesTable tbody').append(`
+            <tr id="row_${courseIndex}">
+                <td id="fileNameTd_${courseIndex}">
+                    ${file.name}  
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeFile(${courseIndex})">Remove</button>
+                </td>
+            </tr>
+        `);
+
+        // Append the cloned input (which now becomes part of the form data) to the hidden part of the DOM, within the same row
+        $('#fileNameTd_' + courseIndex).append(newFileInput);
+
+        // Clear the original file input after cloning and adding the file
+        $(fileInput).val('');
+
+        courseIndex++;
+    } else {
+        alert("Please select a file before adding.");
+    }
+});
+
+function removeFile(index) {
+    $('#row_' + index).remove();
+    $('#file_' + index).remove();
+    $('input[name="StudentSubAttachmentsFiles[' + index + ']"]').remove();
+    //reIndexFiles();
+}
+
+//function reIndexFiles() {
+//    var rows = $('#idfilesTable tbody tr');
+//    fileIndex = 0;
+//    rows.each(function () {
+//        $(this).attr('id', 'row_' + fileIndex);
+//        fileIndex++;
+//    });
+//}
+
+//#endregion
+
+
+$('#btnStudentAdd').click(function (e) {
+    e.preventDefault();
+    debugger;
+
+    var formData = new FormData();
+
+    formData.append('Id', $('#Id').val());
+    formData.append('Name', $('#Name').val());
+    formData.append('Address', $('#Address').val());
+    formData.append('Mobile', $('#Mobile').val());
+
+    // child 
+    var StudentSubCourses = [];
+    $('#coursesTable tbody tr').each(function () {
+        var courseName = $(this).find('input[name*="CourseName"]').val();
+        var teacherName = $(this).find('input[name*="TeacherName"]').val();
+        var maximumStudent = $(this).find('input[name*="MaximumStudent"]').val();
+
+        if (courseName && teacherName && maximumStudent) {
+            var courseData = {
+                CourseName: courseName,
+                TeacherName: teacherName,
+                MaximumStudent: maximumStudent
+            };
+            StudentSubCourses.push(courseData);
+             
+        }
+    });
+    StudentSubCourses.forEach(function (courseData, index) {
+        formData.append(`StudentSubCourses[${index}].CourseName`, courseData.CourseName);
+        formData.append(`StudentSubCourses[${index}].TeacherName`, courseData.TeacherName);
+        formData.append(`StudentSubCourses[${index}].MaximumStudent`, courseData.MaximumStudent);
+    });
+    //
+    
+    $('#idfilesTable tbody tr').each(function () {
+        debugger;
+        var fileInputElement = $(this).find('input[name*="StudentSubAttachmentsFiles"]')[0];
+
+        if (fileInputElement && fileInputElement.files.length > 0) {
+            // Now safely access the first file
+            var fileInput = fileInputElement.files[0];
+            formData.append('StudentSubAttachmentsFiles', fileInput);
+        }
+    });
+
+    $.ajax({
+        url: '/Student/Update',
+        type: 'POST',
+        processData: false, // Important for sending FormData
+        contentType: false,  // Important for sending FormData
+        data: formData,
+        success: function (response) {
+            alert('Student updated successfully!');
+        },
+        error: function (xhr, status, error) {
+            alert('Error: ' + error);
+        }
+    });
+});
+
+
+
+
+
+
+
 
 

@@ -19,10 +19,15 @@ namespace LibraryManagementRepository.DbConfigure
         public DbSet<Book> Books { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<StudentSubCourse> StudentSubCourses { get; set; }
+        public DbSet<StudentSubAttachment> StudentSubAttachments { get; set; }
 
         //auditTrial
         public DbSet<StudentAuditTrial> StudentAuditTrials { get; set; }
         public DbSet<StudentSubCourseAuditTrial> StudentSubCoursesAuditTrials { get; set; }
+        public DbSet<StudentSubAttachmentAuditTrial> StudentSubAttachmentsAuditTrials { get; set; }
+
+
+
 
     }
 }

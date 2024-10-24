@@ -15,7 +15,7 @@ namespace LibraryManagementModels.Entities
         public string? BookDescription { get; set; }
         public string? BookType { get; set; }
         public string? BookAuthor {  get; set; } 
- 
+
 
     }
 }
