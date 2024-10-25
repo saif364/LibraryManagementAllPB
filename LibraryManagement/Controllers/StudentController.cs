@@ -70,7 +70,7 @@ namespace LibraryManagement.Controllers
             }
             catch (Exception ex)
             {
-                return JsonInternalServerError(ex.InnerException.Message ?? ex.Message);
+                return JsonInternalServerError(ex.Message?? ex.InnerException.Message);
             }
         }
         public async Task<IActionResult> Delete(int id)

@@ -76,70 +76,76 @@ namespace LibraryManagementService.Service
         }
         public async Task UpdateAsyncWithAT(StudentVM studentVM, EnumStatus status = EnumStatus.Updated)
         {
-
-            var student = _mapper.Map<Student>(studentVM);
-            if (status == default)
-            {
-                student.Status = EnumStatus.Updated.ToString();
-            }
-            else
-            {
-                student.Status = status.ToString();
-            }
-
             try
             {
                 await BeginTransactionAsync();
 
-                //parent table and audit
-                await _studentRepository.UpdateAsyncWithTransaction(student);//1
-                await AuditTrial(student, status, "Saif", _StudentAuditTrial);//2
-
-                //child table and audit
-                if (studentVM.StudentSubCourses != null)
+                var student = _mapper.Map<Student>(studentVM);
+                if (status == default)
                 {
-                    //delete by momid
-                    await _StudentSubCourse.DeleteByMomIdAsyncWithTransaction(studentVM.Id);//3
-                    foreach (var item in studentVM.StudentSubCourses)
-                    {
-                        var course = _mapper.Map<StudentSubCourse>(item);
-                        course.MomId = studentVM.Id;
-                        await _StudentSubCourse.AddAsyncWithTransaction(course);//4
-                        //Audit
-                        await AuditTrial(course, EnumStatus.Created, "Khalid", _StudentSubCourseAuditTrial);//6
-                    }
-                }
+                    student.Status = EnumStatus.Updated.ToString();
+                     
+                    //parent table and audit
+                    await _studentRepository.UpdateAsyncWithTransaction(student);//1
+                    await AuditTrial(student, status, "Saif", _StudentAuditTrial);//2
 
-                //child file save and audit
-                if (studentVM.StudentSubAttachmentsFiles != null)
-                {
-                    foreach (IFormFile file in studentVM.StudentSubAttachmentsFiles)
+                    //child table and audit
+                    if (studentVM.StudentSubCourses != null)
                     {
-                        var obj = new StudentSubAttachment();
-                        obj.OriginalFileName = file.FileName;
-                        obj.UploadBy = "Khalid";
-                        obj.UploadDate = DateTime.Now;
-                        obj.MomID = studentVM.Id.ToString();
-
-                        var fileName = FileHelper.SaveFile(file, uploadPath);
-                        if (!string.IsNullOrEmpty(fileName))
+                        //delete by momid
+                        await _StudentSubCourse.DeleteByMomIdAsyncWithTransaction(studentVM.Id);//3
+                        foreach (var item in studentVM.StudentSubCourses)
                         {
-                            obj.FileNameInServer = fileName;
-                            await _SubAttachmentRepo.AddAsyncWithTransaction(obj);//7
-                            await AuditTrial(obj, EnumStatus.Created, "Khalid", _SubAttachmentATRepo);//8
+                            var course = _mapper.Map<StudentSubCourse>(item);
+                            course.MomId = studentVM.Id;
+                            await _StudentSubCourse.AddAsyncWithTransaction(course);//4
+                                                                                    //Audit
+                            await AuditTrial(course, EnumStatus.Created, "Khalid", _StudentSubCourseAuditTrial);//6
                         }
                     }
+
+                    //child file save and audit
+                    if (studentVM.StudentSubAttachmentsFiles != null)
+                    {
+                        foreach (IFormFile file in studentVM.StudentSubAttachmentsFiles)
+                        {
+                            var obj = new StudentSubAttachment();
+                            obj.OriginalFileName = file.FileName;
+                            obj.UploadBy = "Khalid";
+                            obj.UploadDate = DateTime.Now;
+                            obj.MomID = studentVM.Id.ToString();
+
+                            var fileName = FileHelper.SaveFile(file, uploadPath);
+                            if (!string.IsNullOrEmpty(fileName))
+                            {
+                                obj.FileNameInServer = fileName;
+                                await _SubAttachmentRepo.AddAsyncWithTransaction(obj);//7
+                                await AuditTrial(obj, EnumStatus.Created, "Khalid", _SubAttachmentATRepo);//8
+                            }
+                            else
+                            {
+                                throw new Exception("File was not saved.");
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    student.Status = status.ToString();
+                    await _studentRepository.UpdateAsyncWithTransaction(student);//1
+                    await AuditTrial(student, status, "Saif", _StudentAuditTrial);//2
                 }
 
                 await SaveChangesAsyncWithTransaction();
                 await CommitTransactionAsync();
-
             }
             catch (Exception)
             {
                 await RollbackTransactionAsync();
                 throw;
             }
+
         }
         public async Task DeleteAsyncWithAT(int id)
         {
@@ -165,7 +171,9 @@ namespace LibraryManagementService.Service
             var vmStudent = _mapper.Map<StudentVM>(student);
 
             var auditList = _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).OrderBy(x => x.Id).Take(20).ToList();
+
             vmStudent.StudentAuditTrials = _mapper.Map<List<BaseAuditTrialVM>>(auditList);
+
 
             var attachments = _SubAttachmentRepo.GetAllAsyncQuery().Where(x => x.MomID == id.ToString()).OrderBy(x => x.Id).ToList();
             vmStudent.AttachmentsFromDB = _mapper.Map<List<StudentSubAttachmentVM>>(attachments);
@@ -184,20 +192,20 @@ namespace LibraryManagementService.Service
 
         public Stream GetFileStream(int id, out string fileName, out string contentType)
         {
-            var attachment =  _SubAttachmentRepo.GetByIdAsync(id).Result;  
-            fileName = attachment?.FileNameInServer;  
+            var attachment = _SubAttachmentRepo.GetByIdAsync(id).Result;
+            fileName = attachment?.FileNameInServer;
 
             if (attachment == null || string.IsNullOrEmpty(fileName))
             {
-                contentType = null;  
-                return null;  
+                contentType = null;
+                return null;
             }
 
             var downloadPath = Path.Combine(uploadPath, fileName);
             if (!System.IO.File.Exists(downloadPath))
             {
-                contentType = null;  
-                return null;  
+                contentType = null;
+                return null;
             }
             contentType = FileHelper.GetContentType(fileName);
             return FileHelper.FileStream(downloadPath);

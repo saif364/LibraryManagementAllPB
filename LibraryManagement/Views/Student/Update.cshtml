@@ -116,6 +116,9 @@
                            
                             <a asp-action="DownloadFile" asp-route-id="@item.Id">@item.OriginalFileName</a>
                         </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeFile(@item.Id)">Remove</button>
+                        </td>
                     }
                 </tr>
             }

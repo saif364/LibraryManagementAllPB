@@ -95,7 +95,7 @@ $('#addFile').click(function () {
 
         courseIndex++;
     } else {
-        alert("Please select a file before adding.");
+        toastr.warning("Please select a file before adding.");
     }
 });
 
