@@ -8,11 +8,11 @@ what we have ?
 -tostr -done
 -centralise viewbag -done
 -dropdown load from chsthml,controller with own list,from db -done
--audit trial
+-audit trial - done
 -logging with seq - done
 -split one to three layer. navigation,business,repository - done
 - base repository for all basic crud  -done
--identity login and logout and register 
+-identity login and logout and register -done
 -automapper -done 
 -middlwire logger for each start end method log write 
 

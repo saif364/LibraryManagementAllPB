@@ -15,9 +15,10 @@ namespace LibraryManagement.Helper
         public static IServiceCollection ServiceCollectionsDI(this IServiceCollection services, string connectionString)
         {
 
+            #region Program cs configure services
             // Register LibraryDbContext with Identity
             services.AddDbContext<LibraryDbContext>(options =>
-                options.UseSqlServer(connectionString));  
+                options.UseSqlServer(connectionString));
 
             // Register Identity with the LibraryDbContext
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -34,6 +35,24 @@ namespace LibraryManagement.Helper
             });
             //
 
+            services.AddControllersWithViews();
+            //swagger for api
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+            //
+
+            // Configure cookie settings
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+            //
+            #endregion
+
+
+            #region  Own Service and auto mapper 
             // Service registrations
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<ILibraryBService, LibraryBService>();
@@ -56,10 +75,13 @@ namespace LibraryManagement.Helper
             //direct repository call for no business layer . Like child objects
             services.AddScoped<IRepository<StudentSubCourse>, Repository<StudentSubCourse>>();
             services.AddScoped<IRepository<StudentSubAttachment>, Repository<StudentSubAttachment>>();
- 
+
+             
+            #endregion
 
             // AutoMapper registration
             services.AddAutoMapper(typeof(MappingProfile)); // Registers all profiles including MappingProfile
+
 
 
             return services;
