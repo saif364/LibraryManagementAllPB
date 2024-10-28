@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -25,27 +25,46 @@ namespace LibraryManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = "Library/Index")
         {
-            if (ModelState.IsValid)
+            try
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+
+                if (ModelState.IsValid)
                 {
-                    return RedirectToLocal(returnUrl);
+                    var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    if (result.Succeeded)
+                    {
+                        return JsonSuccessWithControllerRoute("Successfully Logged in","Library","Index");
+                    }
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 }
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+
+                return View(model);
+                //return JsonSuccess("Data Updated successfully", "Index");
+            }
+            catch (Exception ex)
+            {
+                return JsonInternalServerError(ex.InnerException.Message ?? ex.Message);
             }
 
-            return View(model);
+
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            try
+            {
+                await _signInManager.SignOutAsync();
+                return JsonSuccess("SUccessfully Logged Out", "Login");
+            }
+            catch (Exception ex)
+            {
+                return JsonInternalServerError(ex.InnerException.Message ?? ex.Message);
+            }
+            
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
@@ -70,25 +89,36 @@ namespace LibraryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                if (ModelState.IsValid)
                 {
-                    // Optionally add user to a default role, e.g., "User"
-                    await _userManager.AddToRoleAsync(user, "User");
+                    var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        // Optionally add user to a default role, e.g., "User"
+                        await _userManager.AddToRoleAsync(user, "User");
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return RedirectToAction("Index", "Home");
+                    }
+                    var msg =string.Empty;
+                    foreach (var error in result.Errors)
+                    {
+                          msg=error.Description +"\n";
+                    }
+                    return JsonInternalServerError(msg);
                 }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+
+                return View(model);
+
             }
-
-            return View(model);
+            catch (Exception ex)
+            {
+                return JsonInternalServerError(ex.InnerException.Message ?? ex.Message);
+            }
+           
         }
     }
 }

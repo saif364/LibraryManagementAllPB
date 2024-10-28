@@ -20,6 +20,17 @@ namespace LibraryManagement.Controllers
                 redirectUrl = Url.Action(methodName, controllerName) 
             });
         }
+
+        public IActionResult JsonSuccessWithControllerRoute(string messages, string controller,string methodName)
+        {
+            return Json(new
+            {
+                success = true,
+                status = (int)HttpStatusCodeEnum.Created,
+                message = messages,
+                redirectUrl = Url.Action(methodName, controller)
+            });
+        }
         public IActionResult JsonBadRequest(string messages)
         {
             var controllerName = ControllerContext?.RouteData?.Values["controller"]?.ToString();

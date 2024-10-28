@@ -1,4 +1,5 @@
 ﻿using LibraryManagementModels.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,8 +9,9 @@ namespace LibraryManagementRepository.DbConfigure
 {
     public class LibraryDbContext : IdentityDbContext<ApplicationUser>
     {
-       
-        public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base(options)
+  
+
+        public LibraryDbContext(DbContextOptions<LibraryDbContext> options ) : base(options)
         {
             
         }
@@ -26,8 +28,6 @@ namespace LibraryManagementRepository.DbConfigure
         public DbSet<StudentSubCourseAuditTrial> StudentSubCoursesAuditTrials { get; set; }
         public DbSet<StudentSubAttachmentAuditTrial> StudentSubAttachmentsAuditTrials { get; set; }
 
-
-
-
+       
     }
 }
