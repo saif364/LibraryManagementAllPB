@@ -4,9 +4,11 @@ using LibraryManagementModels.Entities;
 using LibraryManagementRepository.InterfaceRepository;
 using LibraryManagementRepository.Repository;
 using LibraryManagementService.InterfaceService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LibraryManagement.Controllers
 {
+    [Authorize]
     public class StudentController : BaseController
     {
         private readonly IStudentService _studentService;
