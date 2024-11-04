@@ -10,8 +10,9 @@ var connectionString = builder.Configuration.GetConnectionString("LibraryDbConte
 builder.Services.ServiceCollectionsDI(connectionString);
 //
 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
- 
+
 // Step 1: Configure Serilog to use Seq
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug() 

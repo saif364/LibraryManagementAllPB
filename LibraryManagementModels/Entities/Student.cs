@@ -10,8 +10,6 @@ namespace LibraryManagementModels.Entities
         public string Address { get; set; }
         public string Mobile { get; set; }
         public string Status { get; set; }
-
-            
     }
 
     public class StudentAuditTrial : BaseAuditTrial

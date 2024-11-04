@@ -74,12 +74,42 @@ namespace LibraryManagementService.Service
                 throw;
             }
         }
+
+        public async Task<StudentVM> GetByIdAsyncAT(int id)
+        {
+            var student = await _studentRepository.GetByIdAsync(id);
+
+
+
+            var vmStudent = _mapper.Map<StudentVM>(student);
+
+
+
+
+            var auditList = _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).OrderBy(x => x.Id).Take(20).ToList();
+
+            vmStudent.StudentAuditTrials = _mapper.Map<List<BaseAuditTrialVM>>(auditList);
+
+
+            var attachments = _SubAttachmentRepo.GetAllAsyncQuery().Where(x => x.MomID == id.ToString()).OrderBy(x => x.Id).ToList();
+            vmStudent.AttachmentsFromDB = _mapper.Map<List<StudentSubAttachmentVM>>(attachments);
+
+            var courses = _StudentSubCourse.GetAllAsyncQuery().Where(x => x.MomId == id).ToList();
+            vmStudent.StudentSubCourses = _mapper.Map<List<StudentSubCourseVM>>(courses);
+            return vmStudent;
+        }
         public async Task UpdateAsyncWithAT(StudentVM studentVM, EnumStatus status = EnumStatus.Updated)
         {
             try
             {
                 await BeginTransactionAsync();
 
+
+                //Student student = new Student();
+
+                //student.Address = studentVM.Address;
+                //student.Name = studentVM.Name;
+               
                 var student = _mapper.Map<Student>(studentVM);
                 if (status == default)
                 {
@@ -165,23 +195,7 @@ namespace LibraryManagementService.Service
                 throw;
             }
         }
-        public async Task<StudentVM> GetByIdAsyncAT(int id)
-        {
-            var student = await _studentRepository.GetByIdAsync(id);
-            var vmStudent = _mapper.Map<StudentVM>(student);
-
-            var auditList = _StudentAuditTrial.GetAllAsyncQuery().Where(x => x.Id == id).OrderBy(x => x.Id).Take(20).ToList();
-
-            vmStudent.StudentAuditTrials = _mapper.Map<List<BaseAuditTrialVM>>(auditList);
-
-
-            var attachments = _SubAttachmentRepo.GetAllAsyncQuery().Where(x => x.MomID == id.ToString()).OrderBy(x => x.Id).ToList();
-            vmStudent.AttachmentsFromDB = _mapper.Map<List<StudentSubAttachmentVM>>(attachments);
-
-            var courses = _StudentSubCourse.GetAllAsyncQuery().Where(x => x.MomId == id).ToList();
-            vmStudent.StudentSubCourses = _mapper.Map<List<StudentSubCourseVM>>(courses);
-            return vmStudent;
-        }
+       
         public async Task StatusChange(EnumStatus status, int id)
         {
             var studentVm = await _studentRepository.GetByIdAsync(id);

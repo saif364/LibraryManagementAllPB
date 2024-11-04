@@ -29,7 +29,6 @@ namespace LibraryManagement.Controllers
         {
             try
             {
-
                 if (ModelState.IsValid)
                 {
                     var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
@@ -39,7 +38,6 @@ namespace LibraryManagement.Controllers
                     }
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 }
-
                 return View(model);
                 //return JsonSuccess("Data Updated successfully", "Index");
             }
